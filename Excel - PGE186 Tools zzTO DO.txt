@@ -1,0 +1,33 @@
+in 'add for Nargis CleanCommentRows():
+result = ReplaceText("Rating verified via ", "")
+
+CheckIDsQC: The test of counting blanks in cols F, G, H, vs. BY doesn't catch
+100% of permutations of missing data.  Develop a more foolproof method of
+finding sections split by blanks, but then checking for blanks in those
+sections.
+
+UpdateTopSection: include error checking for BotRange and TopRange containing
+rows or other problems made from CAISO Update not having expected blanks rows,
+etc.
+
+Build more robust TopRange and BotRange finding to account for non-standardness,
+e.g. Joe added four merged rows that the code skipped.
+
+Add error-checking to prevent Source Doc Ref Table from crashing when it tries
+to run without Change IDs Learn error trapping
+
+For Source Docs Used - filter "|Previously submitted as Mesa-Santa Maria on
+12/14/2018;"? - preserve sorted Station names
+
+**** For Word Doc: Pull line ratings from T-Line Analysis Priority Listing
+R13.xlsm automatically
+
+
+General:  clean out all unused Dim'd variables
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+Version 1.5 - 5/3/2019
+
+Swaps Source Docs macros button names to correctly run the applicable macro
+Renames Create_Source_Doc_Table to MakeSourceDocsRefTable
+Renames CreateRatingsRequestedTable to MakeRatingsRequestedTable
+Abstracts away table creation to a general sub receving passed parameters and changes search for "=" to "Like" to allow for more search flexibility
+Adds buttons and code to make tables for Relays, Equipment Added, Equipment Retired
+Changes order of buttons to make tables in match Word doc order
+Checks for Change IDs as a prerequisite for running MakeSourceDocsRefTable
+Prevents Highlight macro from changing colors in legend at bottom below data rows
+
+Version 1.4 - 4/23/2019
+
+Adds tool to make Source Documents Used table, parsing Comments field
+Adds tool to make Ratings Requested table
+
+Version 1.3 - 3/26/2019
+
+Removes "Retired" rows from SourceDocRefTable.
+Adds the ability to update add-in to the current version.
+Rearranges tools into three groups.
+Fixes problem caused by changing BotRange row numbers when deletions happened.
+Allows for any number of blank rows between top and bottom sections.
+Unmerges all cells before processing.
+
+
+Version 1.2 - 3/21/2019
+
+Adds in SourceDocRefTable code from PGE CAISO Submittal Template 3.00.xltm
+Removes "Required Updates" row from SourceDocRefTable.
+Creates a SourceDocRefTable if none exists, preserving column widths.
+Refactors SourceDocRefTable code.
