@@ -11,7 +11,7 @@ See Excel - PGE186 Tools.xlam Installation.docx or copy the .xlam file to your C
 
 ## Tools
 
-The following tools are provided inside a custom ribbon tab, the [guidance|https://www.thespreadsheetguru.com/blog/step-by-step-instructions-create-first-excel-ribbon-vba-addin] for which was provided by Chris Newman, the Spreadsheet Guru.
+The following tools are provided inside a custom ribbon tab, the [guidance](https://www.thespreadsheetguru.com/blog/step-by-step-instructions-create-first-excel-ribbon-vba-addin) for which was provided by Chris Newman, the Spreadsheet Guru.
 
 ### for the Excel sheet
 
