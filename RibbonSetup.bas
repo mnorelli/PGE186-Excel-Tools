@@ -36,7 +36,7 @@ Select Case control.ID
   
   Case "GroupC": MakeVisible = True
   Case "cButton01": MakeVisible = True
-'  Case "cButton02": MakeVisible = True
+  Case "cButton02": MakeVisible = True
 '  Case "cButton03": MakeVisible = True
 '  Case "cButton04": MakeVisible = True
 '  Case "cButton05": MakeVisible = True
@@ -46,8 +46,8 @@ Select Case control.ID
 '  Case "cButton09": MakeVisible = True
 '  Case "cButton10": MakeVisible = True
   
-'  Case "GroupD": MakeVisible = True
-'  Case "dButton01": MakeVisible = True
+  Case "GroupD": MakeVisible = True
+  Case "dButton01": MakeVisible = True
 '  Case "dButton02": MakeVisible = True
 '  Case "dButton03": MakeVisible = True
 '  Case "dButton04": MakeVisible = True
@@ -91,7 +91,7 @@ Sub GetLabel(ByVal control As IRibbonControl, ByRef Labeling)
 
 Select Case control.ID
   
-  Case "CustomTab": Labeling = "PGE186 Tools  v1.5"
+  Case "CustomTab": Labeling = "PGE186 Tools  v1.7"
   
   Case "GroupA": Labeling = "CAISO Update Tab"
   Case "aButton01": Labeling = "Color Row by Change Type"
@@ -117,9 +117,9 @@ Select Case control.ID
 '  Case "bButton09": Labeling = "Button"
 '  Case "bButton10": Labeling = "Button"
   
-  Case "GroupC": Labeling = "PGE186 Tools"
-  Case "cButton01": Labeling = "Update Tools"
-'  Case "cButton02": Labeling = "Button"
+  Case "GroupC": Labeling = "Info Requests"
+  Case "cButton01": Labeling = "CT"
+  Case "cButton02": Labeling = "Field Verification"
 '  Case "cButton03": Labeling = "Button"
 '  Case "cButton04": Labeling = "Button"
 '  Case "cButton05": Labeling = "Button"
@@ -129,8 +129,8 @@ Select Case control.ID
 '  Case "cButton09": Labeling = "Button"
 '  Case "cButton10": Labeling = "Button"
   
-'  Case "GroupD": Labeling = "Source Doc Ref Table"
-'  Case "dButton01": Labeling = "Create Source Doc Table"
+  Case "GroupD": Labeling = "PGE186 Tools"
+  Case "dButton01": Labeling = "Update Tools"
 '  Case "dButton02": Labeling = "Button"
 '  Case "dButton03": Labeling = "Button"
 '  Case "dButton04": Labeling = "Button"
@@ -197,8 +197,8 @@ Select Case control.ID
 '  Case "bButton09": RibbonImage = "ObjectPictureFill"
 '  Case "bButton10": RibbonImage = "ObjectPictureFill"
   
-  Case "cButton01": RibbonImage = "ControlsGallery"
-'  Case "cButton02": RibbonImage = "ObjectPictureFill"
+  Case "cButton01": RibbonImage = "HighImportance"
+  Case "cButton02": RibbonImage = "TentativeAcceptInvitation"
 '  Case "cButton03": RibbonImage = "ObjectPictureFill"
 '  Case "cButton04": RibbonImage = "ObjectPictureFill"
 '  Case "cButton05": RibbonImage = "ObjectPictureFill"
@@ -208,7 +208,7 @@ Select Case control.ID
 '  Case "cButton09": RibbonImage = "ObjectPictureFill"
 '  Case "cButton10": RibbonImage = "ObjectPictureFill"
 '
-'  Case "dButton01": RibbonImage = "FileSaveAsWordDocx"
+  Case "dButton01": RibbonImage = "ControlsGallery"
 '  Case "dButton02": RibbonImage = "ObjectPictureFill"
 '  Case "dButton03": RibbonImage = "ObjectPictureFill"
 '  Case "dButton04": RibbonImage = "ObjectPictureFill"
@@ -275,8 +275,8 @@ Select Case control.ID
 '  Case "bButton09": Size = Small
 '  Case "bButton10": Size = Small
   
-  Case "cButton01": Size = Large
-'  Case "cButton02": Size = Small
+  Case "cButton01": Size = Small
+  Case "cButton02": Size = Small
 '  Case "cButton03": Size = Small
 '  Case "cButton04": Size = Small
 '  Case "cButton05": Size = Small
@@ -286,7 +286,7 @@ Select Case control.ID
 '  Case "cButton09": Size = Small
 '  Case "cButton10": Size = Small
 '
-'  Case "dButton01": Size = Large
+  Case "dButton01": Size = Large
 '  Case "dButton02": Size = Small
 '  Case "dButton03": Size = Small
 '  Case "dButton04": Size = Small
@@ -350,8 +350,8 @@ Select Case control.ID
 '  Case "bButton09": Application.Run "DummyMacro"
 '  Case "bButton10": Application.Run "DummyMacro"
   
-  Case "cButton01": Application.Run "CompareAddIns"
-'  Case "cButton02": Application.Run "DummyMacro"
+  Case "cButton01": Application.Run "MakeInfoRequestCTTable"
+  Case "cButton02": Application.Run "MakeInfoRequestTable"
 '  Case "cButton03": Application.Run "DummyMacro"
 '  Case "cButton04": Application.Run "DummyMacro"
 '  Case "cButton05": Application.Run "DummyMacro"
@@ -361,7 +361,7 @@ Select Case control.ID
 '  Case "cButton09": Application.Run "DummyMacro"
 '  Case "cButton10": Application.Run "DummyMacro"
 '
-'  Case "dButton01": Application.Run "DummyMacro"
+  Case "dButton01": Application.Run "CompareAddIns"
 '  Case "dButton02": Application.Run "DummyMacro"
 '  Case "dButton03": Application.Run "DummyMacro"
 '  Case "dButton04": Application.Run "DummyMacro"
@@ -425,8 +425,8 @@ Select Case control.ID
 '  Case "bButton09": Screentip = "Description"
 '  Case "bButton10": Screentip = "Description"
   
-  Case "cButton01": Screentip = "Update PGE186 tools to the current version"
-'  Case "cButton02": Screentip = "Description"
+  Case "cButton01": Screentip = "Make info request rows in 'CT' tab style"
+  Case "cButton02": Screentip = "Make info request rows in 'Field Verification' tab style"
 '  Case "cButton03": Screentip = "Description"
 '  Case "cButton04": Screentip = "Description"
 '  Case "cButton05": Screentip = "Description"
@@ -436,7 +436,7 @@ Select Case control.ID
 '  Case "cButton09": Screentip = "Description"
 '  Case "cButton10": Screentip = "Description"
 '
-'  Case "dButton01": Screentip = "Description"
+  Case "dButton01": Screentip = "Update PGE186 tools to the current version"
 '  Case "dButton02": Screentip = "Description"
 '  Case "dButton03": Screentip = "Description"
 '  Case "dButton04": Screentip = "Description"
@@ -472,6 +472,7 @@ Select Case control.ID
 End Select
 
 End Sub
+
 
 
 

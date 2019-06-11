@@ -1,9 +1,29 @@
+Version 1.8 -
+
+Refactor Color Row by Change Type based on conditional formatting
+
+Version 1.7 - 6/10/2019
+
+Allows Ratings Requested table to collect Create rows in red text that need Verification
+Info Requests show only the rows appropriate for the kind of request
+Made 9px font default for table exports
+
+Version 1.6 - 6/10/2019
+
+Adds new error checking for creating top and bottom sections
+Checks for blank or missing ChangeIDs
+Adds better error text
+Fixed Ratings Requested tool to pull Additional Info instead of Celerity Comment
+Adds tools for selecting and formatting info for Information Requests
+Arranges Source Docs Used according to current template
+Adds a High Rating column to Source Docs Ref Table, to help finding most-limiting component
+
 Version 1.5 - 5/3/2019
 
 Swaps Source Docs macros button names to correctly run the applicable macro
 Renames Create_Source_Doc_Table to MakeSourceDocsRefTable
 Renames CreateRatingsRequestedTable to MakeRatingsRequestedTable
-Abstracts away table creation to a general sub receving passed parameters and changes search for "=" to "Like" to allow for more search flexibility
+Abstracts away table creation to a general sub receiving passed parameters and changes search for "=" to "Like" to allow for more search flexibility
 Adds buttons and code to make tables for Relays, Equipment Added, Equipment Retired
 Changes order of buttons to make tables in match Word doc order
 Checks for Change IDs as a prerequisite for running MakeSourceDocsRefTable
@@ -22,7 +42,6 @@ Rearranges tools into three groups.
 Fixes problem caused by changing BotRange row numbers when deletions happened.
 Allows for any number of blank rows between top and bottom sections.
 Unmerges all cells before processing.
-
 
 Version 1.2 - 3/21/2019
 
