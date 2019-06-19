@@ -5,6 +5,7 @@ Attribute VB_Name = "RibbonSetup"
 'https://www.thespreadsheetguru.com/blog/step-by-step-instructions-create-first-excel-ribbon-vba-addin
 'https://www.thespreadsheetguru.com/myfirstaddin-help/
 '**************************************************************
+Public Const Version = "2.1"
 
 Sub GetVisible(control As IRibbonControl, ByRef MakeVisible)
 'PURPOSE: Show/Hide buttons based on how many you need (False = Hide/True = Show)
@@ -91,12 +92,12 @@ Sub GetLabel(ByVal control As IRibbonControl, ByRef Labeling)
 
 Select Case control.ID
   
-  Case "CustomTab": Labeling = "PGE186 Tools  v1.7"
+  Case "CustomTab": Labeling = "PGE186 Tools  v" & Version
   
   Case "GroupA": Labeling = "CAISO Update Tab"
   Case "aButton01": Labeling = "Color Row by Change Type"
   Case "aButton02": Labeling = "   Update Tower Numbers"  ' extra space intentional
-  Case "aButton03": Labeling = "Add Change IDs"
+  Case "aButton03": Labeling = "Add Change Desc"
 '  Case "aButton04": Labeling = "Button"
 '  Case "aButton05": Labeling = "Button"
 '  Case "aButton06": Labeling = "Button"
@@ -110,7 +111,7 @@ Select Case control.ID
   Case "bButton02": Labeling = "Relay Request"
   Case "bButton03": Labeling = "Equipment Added"
   Case "bButton04": Labeling = "Equipment Retired"
-  Case "bButton05": Labeling = "Source Docs Used  "
+  Case "bButton05": Labeling = "Source Docs Used  "  ' extra space intentional
   Case "bButton06": Labeling = "Source Docs Reference"
 '  Case "bButton07": Labeling = "Button"
 '  Case "bButton08": Labeling = "Button"
@@ -177,7 +178,7 @@ Select Case control.ID
   
   Case "aButton01": RibbonImage = "ViewBackToColorView"
   Case "aButton02": RibbonImage = "RelationshipsHideTable"
-  Case "aButton03": RibbonImage = "TripaneViewMode"
+  Case "aButton03": RibbonImage = "FileDocumentInspect"
 '  Case "aButton04": RibbonImage = "ObjectPictureFill"
 '  Case "aButton05": RibbonImage = "ObjectPictureFill"
 '  Case "aButton06": RibbonImage = "ObjectPictureFill"
@@ -330,7 +331,7 @@ Select Case control.ID
   
   Case "aButton01": Application.Run "Paint"
   Case "aButton02": Application.Run "AddZeroes"
-  Case "aButton03": Application.Run "AddChangeIDCode"
+  Case "aButton03": Application.Run "AddChangeDescCode"
 '  Case "aButton04": Application.Run "DummyMacro"
 '  Case "aButton05": Application.Run "DummyMacro"
 '  Case "aButton06": Application.Run "DummyMacro"
@@ -472,6 +473,7 @@ Select Case control.ID
 End Select
 
 End Sub
+
 
 
 

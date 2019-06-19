@@ -1,20 +1,21 @@
-Top and bottom sections:
-- account for non-standardness, e.g. Joe added four merged rows that the code skipped.
+Change Descriptions
+- duplicate checking to not mark as a dupe something that is already changed in bottom section? ignored for now
 
-Source Docs Ref Table:
+Source Docs Ref Table
 - allow macro to run if there are no rows in bottom section
 
+MakeSourceDocsRefTable
+- build with MakeTable instead?  too custom to template-ize
 
 ****************************
-General:  clean out all unused Dim'd variables
+General
+- refactor to pull out copy-paste-by-array (Desc, Application.Index(ar,0,1)) from MakeSourceDocRefTable and UpdateTopSection
+
+- clean out all unused Dim'd variables
+- take out old Functions or refactor to include them
 
 
 ****************************
-For Word Doc: Pull line ratings from T-Line Analysis Priority Listing
-R13.xlsm automatically
-
-
-****************************
-Update after new regime outlined on Wed 6/12/19
+For Word Doc: Pull line ratings from T-Line Analysis Priority Listing R13.xlsm automatically
 
 

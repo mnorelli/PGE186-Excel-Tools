@@ -1,19 +1,49 @@
-Version 1.8 -
+Version  2.1 - 6/19/2019
 
-Refactor Color Row by Change Type based on conditional formatting
+Adds TLS numbers for Change Descriptions of transmission line rows
+Adds TLS numbers at bottom from TLS of row in top section with same OID
+For Create rows, adds Change Description at bottom from row in top section with same Component Description
+Adds public variable for splitrow between top and bottom sections
+Removes trailing commas from document references to fix problem in making Source Docs Used table
+In Source Doc Used processing, skips doc name parts found containing a semicolon
+Sorts Source Docs Used table by type of doc (descending), substation, then by numeric doc number
+
+Version 2.0 - 6/14/2019
+
+Refactors to create top and bottom sections once as public 2D objects
+Refactors MakeTable to use public top array
+Extends to bottom section the adding of the new Change Description
+Adds two-row Change Descriptions for rows whose Description contains a space
+Checks top section for duplicate Change Descriptions
+Alerts if no tower numbers are found when Update Tower Numbers is run
+Refactors Source Doc Ref Table to copy faster, refactor to use OID instead of Change ID, and delete Change Description column
+Deletes Change Description column from Source Doc Ref Table
+Removes unneeded routines
+Adds formatting to Info Request tables
+
+Version 1.9 - 6/12/2019
+
+Implements change to Change Descriptions from numbers to descriptions, checking for identical Change Descriptions, and displaying new button
+Refactors Color Row by Change Type to use conditional formatting dynamically instead of static background change
+Edits Source Docs Used sorting
+
+Version 1.8 - 6/11/2019
+
+Corrects error in Source Docs Used sorting
+Changes alignment in Source Docs Ref Table, Ratings Requested, Equipment Added, and Equipment Retired.
 
 Version 1.7 - 6/10/2019
 
 Allows Ratings Requested table to collect Create rows in red text that need Verification
 Info Requests show only the rows appropriate for the kind of request
-Made 9px font default for table exports
+Makes 9px font default for table exports
 
 Version 1.6 - 6/10/2019
 
 Adds new error checking for creating top and bottom sections
 Checks for blank or missing ChangeIDs
 Adds better error text
-Fixed Ratings Requested tool to pull Additional Info instead of Celerity Comment
+Fixes Ratings Requested tool to pull Additional Info instead of Celerity Comment
 Adds tools for selecting and formatting info for Information Requests
 Arranges Source Docs Used according to current template
 Adds a High Rating column to Source Docs Ref Table, to help finding most-limiting component
