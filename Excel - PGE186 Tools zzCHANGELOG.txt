@@ -1,3 +1,7 @@
+Version  2.2 - 6/20/2019
+
+Corrects Change Descriptions to look for TLSs first before concatenating other fields
+
 Version  2.1 - 6/19/2019
 
 Adds TLS numbers for Change Descriptions of transmission line rows

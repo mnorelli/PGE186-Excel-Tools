@@ -1,5 +1,5 @@
 Attribute VB_Name = "Macros"
-'Version: 2.1
+'Version: 2.2
 
 '**************************************************************
 'RIBBONSETUP TEMPLATE AUTHOR: Chris Newman, TheSpreadsheetGuru
@@ -12,6 +12,8 @@ Attribute VB_Name = "Macros"
 'Macros herein: Michael Norelli, Celerity Consulting Group, Inc.
 '
 'Change history:
+'2.2
+'- Corrects Change Descriptions to look for TLSs first before concatenating other fields
 '2.1
 '- Adds TLS numbers for Change Descriptions of transmission line rows
 '- Adds TLS numbers at bottom from TLS of row in top section with same OID
@@ -256,8 +258,8 @@ Dim CompDescColNum, rTopCompDesc
         '         rTopCompDesc for G$3:G$55
         '         cChangeUp1 Not used
                              
-        ChangeTopRange.value = "=IF(ISERROR(FIND("" ""," & cDescT & "))," & cTypeT & "&"" ""&" & cDescT & ",IF(LEFT(" & cStationT & ",6)=""[TRANS"",IF(LEFT(" & cChangeLeft4 & ",2)<>""TL""," & cTypeT & "&MID(" & cChangeUp1 & ",FIND(CHAR(10)," & cChangeUp1 & "),5)&"" - ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cChangeLeft4 & "&"" - ""&" & cDescT & ")," & cTypeT & "&CHAR(10)&" & cDescT & "))"
-        ChangeBotRange.value = "=IF(ISERROR(FIND("" ""," & cDescB & "))," & cTypeB & "&"" ""&" & cDescB & ",IF(LEFT(" & cStationB & ",6)=""[TRANS"",IFERROR(" & cTypeB & "&TRIM(MID(INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0)),FIND(CHAR(10),INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0))),5))&"" - ""&" & cDescB & ",INDEX(" & ChangeTopRange.Address & ",MATCH(" & cDescB & "," & rTopCompDesc & ",0)))," & cTypeB & "&CHAR(10)&" & cDescB & "))"
+        ChangeTopRange.value = "=IF(LEFT(" & cStationT & ",6)=""[TRANS"",IF(LEFT(" & cChangeLeft4 & ",2)<>""TL""," & cTypeT & "&MID(" & cChangeUp1 & ",FIND(CHAR(10)," & cChangeUp1 & "),5)&"" - ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cChangeLeft4 & "&"" - ""&" & cDescT & "),IF(ISERROR(FIND("" ""," & cDescT & "))," & cTypeT & "&"" ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cDescT & "))"
+        ChangeBotRange.value = "=IF(LEFT(" & cStationB & ",6)=""[TRANS"",IFERROR(" & cTypeB & "&TRIM(MID(INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0)),FIND(CHAR(10),INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0))),5))&"" - ""&" & cDescB & ",INDEX(" & ChangeTopRange.Address & ",MATCH(" & cDescB & "," & rTopCompDesc & ",0))),IF(ISERROR(FIND("" ""," & cDescB & "))," & cTypeB & "&"" ""&" & cDescB & "," & cTypeB & "&CHAR(10)&" & cDescB & "))"
         AllChangeCol = ChangeTopRange.Cells.Item(1).Address & ":" & ChangeBotRange.Cells.Item(ChangeBotRange.Cells.count).Address
         With Sheets("CAISO Update").Range(ChangeDescCol & ":" & ChangeDescCol).Columns
             .AutoFit
