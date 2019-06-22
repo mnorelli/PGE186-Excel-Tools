@@ -1,5 +1,5 @@
 Attribute VB_Name = "Macros"
-'Version: 2.2
+'Version: 2.3
 
 '**************************************************************
 'RIBBONSETUP TEMPLATE AUTHOR: Chris Newman, TheSpreadsheetGuru
@@ -12,6 +12,10 @@ Attribute VB_Name = "Macros"
 'Macros herein: Michael Norelli, Celerity Consulting Group, Inc.
 '
 'Change history:
+'2.3
+'- Changes Change ID numbers to fill down only to last row of top section
+'- Adds process to remove old add-in files from user directory when updating
+'- In Change Descriptions, changes DISC to SW for transmission line switches
 '2.2
 '- Corrects Change Descriptions to look for TLSs first before concatenating other fields
 '2.1
@@ -149,7 +153,7 @@ Private Sub CondFormat(cond As String, r As Integer, g As Integer, b As Integer)
             End With
         End With
     End With
-    
+
 End Sub
 
 
@@ -169,22 +173,22 @@ Dim CompDescColNum, rTopCompDesc
     cTypeCol = "H"  'Component Type found in column
     cDescCol = "G"  'Component Description found in column
     ChangeDescCol = "BY"  'where to write new Change Descriptions
-    
+
     'Create formula to concatenate Component Type and Description
     ChangeDescColNum = FindLastCol("Change Description")
     StationNameColNum = FindLastCol("Station Name")
     OIDColNum = FindLastCol("OID")
     CompDescColNum = FindLastCol("Component Description")
-    
-            
+
+
     cTypeT = Cells(StartRow, cTypeCol).Address(0, 0)
     cDescT = Cells(StartRow, cDescCol).Address(0, 0)
     cStationT = Cells(StartRow, StationNameColNum).Address(0, 0)
     cChangeUp1 = Cells(StartRow, ChangeDescColNum).Offset(-1, 0).Address(0, 0)
     cChangeLeft4 = Cells(StartRow, ChangeDescColNum).Offset(0, 4).Address(0, 0)
-    
+
     If MakeTopBottomArray("CAISO Update", ChangeDescCol, StartRow) Then
-    
+
         '***********************  ChangeIDs
         '*
         'put ChangeIDs in three columns after Change Description column + 1.  Multiple runs will overwrite, not append new columns
@@ -194,20 +198,20 @@ Dim CompDescColNum, rTopCompDesc
         c31 = Cells(3, ChangeDescColNum + 2).Address(0, 0)
         c32 = Cells(3, ChangeDescColNum + 3).Address(0, 0)
         c33 = Cells(3, ChangeDescColNum + 4).Address(0, 0)
-    
+
         Range(c13).value = "Change ID"
         Range(c31).Formula = "=IF(H3=""TLS"",H3,IF(ISBLANK(A3),""A"",IF(ISERR(FIND("" "",TRIM(A3))),upper(LEFT(A3,1)),upper(LEFT(A3,1)&MID(A3,FIND("" "",A3)+1,1)))))"
         Range(c32).Formula = "=MAXIFS(INDIRECT(""" & c22 & ":""&ADDRESS(ROW()-1,COLUMN())),INDIRECT(""" & c21 & ":""&ADDRESS(ROW()-1,COLUMN()-1))," & c31 & ")+1"
         Range(c33).Formula = "=" & c31 & "&" & c32
         Range(c33).Font.Bold = True
-    
-        Range(c31).Resize(splitrow, 3).FillDown
+
+        Range(c31).Resize(splitrow - StartRow, 3).FillDown
         '*
         '***********************   ChangeIDs
-    
+
         Set ChangeTopRange = TopRange.Columns(ChangeDescColNum)
         Set ChangeBotRange = BotRange.Columns(ChangeDescColNum)
-        
+
         BotFirstRow = Split(BotRange.Cells.Item(1).Address(1, 0), "$")(1)
         cTypeB = Cells(BotFirstRow, cTypeCol).Address(0, 0)
         cDescB = Cells(BotFirstRow, cDescCol).Address(0, 0)
@@ -216,56 +220,64 @@ Dim CompDescColNum, rTopCompDesc
         rTopOIDs = TopRange.Columns(OIDColNum).Address(1, 0)
         rBotOIDs = BotRange.Columns(OIDColNum).Address(1, 0)
         rTopCompDesc = TopRange.Columns(CompDescColNum).Address(1, 0)
-        
+
         'To implement:
         '
         ' TOP SECTION
         '
-        '=IF(ISERROR(FIND(" ",G18)),H18&" "&G18,
-        '    IF(LEFT(F18,6)="[TRANS",
-        '       IF(LEFT(CB18,2)<>"TL",
-        '          H18&MID(BY17,FIND(CHAR(10),BY17),5)&" - "&G18,
-        '          H18&CHAR(10)&CB18&" - "&G18),H18&CHAR(10)&G18))
+        '=IF(LEFT(F20,6)="[TRANS",       'if this is a transmission line
+        '    IF(LEFT(CC20,2)<>"TL",      'if this is not a TLS
+        '                                'construct a description from these pieces:
+        '        IF(H20="DISC","SW",H20) 'first, replace SW for DISC type, where present
+        '            &MID(BY19,FIND(CHAR(10),BY19),5)&" - "&G20,   'and add the TLS number
+        '                            'from the cell above with a dash and the description
+        '            H20&CHAR(10)&CC20&" - "&G20),  'if it is a TLS
+        '            'use the type ("TLS") and on a new line, the TLS's change ID number
+        '            'plus the description
+        '            IF(ISERROR(FIND(" ",G20)),H20&" "&G20,H20&CHAR(10)&G20))
+        '            'if it's inside a sub (not transmission line feature), then assemble
+        '            'the usual elements in the usual way, adding a line feed if the
+        '            'description has a space
         '
-        'Replace: cDescT for G18
-        '         cTypeT for H18
-        '         cStationT for F18
-        '         cChangeUp1 for BY17
-        '         cChangeLeft4 for CB18
-        'then paste in the value (not formula) for TopRange cell offset from current by four (e.g. "TLS1")
+        'Replace:
+        '    cStationT for F20
+        '    cChangeLeft4 for CC20
+        '    cTypeT for H20
+        '    cDescT for G20
+        '    cChangeUp1 for BY19
         '
         '
         ' BOTTOM SECTION
         '
-        '=IF(ISERROR(FIND(" ",G75)),    'if there is no blank in Description'
-        '  H75&" "&G75,                 'put a blank in
-        '                               'otherwise
-        '    IF(LEFT(F75,6)="[TRANS",   'if this is a transmission line
-        '       IFERROR(H75&TRIM(MID(INDEX($BY$3:$BY$55,MATCH(C75,C$3:C$55,0)),FIND(CHAR(10),INDEX($BY$3:$BY$55,MATCH(C75,C$3:C$55,0))),5))&" - "&G75,
-        '                               'use the OID to find the current TLS and add that into the combination of Type and Description
-        '                               'if that's an error (lookup didn't work because of no OID) then
-        '                               'use the Description which should be the same to find the current
-        '                               'TLS and add that into the combination of Type and Description
-        '               INDEX($BY$3:$BY$55,MATCH(G75,G$3:G$55,0))
-        '               ),
-        '       H75&CHAR(10)&G75))      'otherwise, just add a simple line feed between
+        '=IF(LEFT(F75,6)="[TRANS",   'if this is a transmission line
+        '   IFERROR(IF(H75="DISC","SW",H75)&TRIM(MID(INDEX($BY$3:$BY$55,MATCH(C75,C$3:C$55,0)),
+        '       FIND(CHAR(10),INDEX($BY$3:$BY$55,MATCH(C75,C$3:C$55,0))),5))&" - "&G75,
+        '           'use the OID to get the TLS number from the text from the top section and
+        '           ' add it to the description (to allow for description updates)
+        '       INDEX($BY$3:$BY$55,MATCH(G75,G$3:G$55,0))),
+        '           'otherwise use the description to get the whole text from the top section
+        '           ' (there is no OID, it's a Create row, ad the description should be identical)
+        '    IF(ISERROR(FIND(" ",G75)),H75&" "&G75,H75&CHAR(10)&G75))
+        '          'if it's not a transmission line, make the in the usual way
         '
         ' Replace as above, and:
-        '         ChangeTopRange for $BY$3:$BY$55
-        '         cOID for C75
-        '         rTopOIDs for C$3:C$55
-        '         cDescB for G75
-        '         rTopCompDesc for G$3:G$55
-        '         cChangeUp1 Not used
-                             
-        ChangeTopRange.value = "=IF(LEFT(" & cStationT & ",6)=""[TRANS"",IF(LEFT(" & cChangeLeft4 & ",2)<>""TL""," & cTypeT & "&MID(" & cChangeUp1 & ",FIND(CHAR(10)," & cChangeUp1 & "),5)&"" - ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cChangeLeft4 & "&"" - ""&" & cDescT & "),IF(ISERROR(FIND("" ""," & cDescT & "))," & cTypeT & "&"" ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cDescT & "))"
-        ChangeBotRange.value = "=IF(LEFT(" & cStationB & ",6)=""[TRANS"",IFERROR(" & cTypeB & "&TRIM(MID(INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0)),FIND(CHAR(10),INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0))),5))&"" - ""&" & cDescB & ",INDEX(" & ChangeTopRange.Address & ",MATCH(" & cDescB & "," & rTopCompDesc & ",0))),IF(ISERROR(FIND("" ""," & cDescB & "))," & cTypeB & "&"" ""&" & cDescB & "," & cTypeB & "&CHAR(10)&" & cDescB & "))"
+        '       ChangeTopRange.Address for $BY$3:$BY$55
+        '       cOID for C75
+        '       cStationB for F75
+        '       cTypeB for H75
+        '       rTopOIDs for C$3:C$55
+        '       cDescB for G75
+        '       rTopCompDesc for G$3:G$55
+        '       cChangeUp1 Not used
+
+        ChangeTopRange.value = "=IF(LEFT(" & cStationT & ",6)=""[TRANS"",IF(LEFT(" & cChangeLeft4 & ",2)<>""TL"",IF(" & cTypeT & "=""DISC"",""SW""," & cTypeT & ")&MID(" & cChangeUp1 & ",FIND(CHAR(10)," & cChangeUp1 & "),5)&"" - ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cChangeLeft4 & "&"" - ""&" & cDescT & "),IF(ISERROR(FIND("" ""," & cDescT & "))," & cTypeT & "&"" ""&" & cDescT & "," & cTypeT & "&CHAR(10)&" & cDescT & "))"
+        ChangeBotRange.value = "=IF(LEFT(" & cStationB & ",6)=""[TRANS"",IFERROR(IF(" & cTypeB & "=""DISC"",""SW""," & cTypeB & ")&TRIM(MID(INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0)),FIND(CHAR(10),INDEX(" & ChangeTopRange.Address & ",MATCH(" & cOID & "," & rTopOIDs & ",0))),5))&"" - ""&" & cDescB & ",INDEX(" & ChangeTopRange.Address & ",MATCH(" & cDescB & "," & rTopCompDesc & ",0))),IF(ISERROR(FIND("" ""," & cDescB & "))," & cTypeB & "&"" ""&" & cDescB & "," & cTypeB & "&CHAR(10)&" & cDescB & "))"
         AllChangeCol = ChangeTopRange.Cells.Item(1).Address & ":" & ChangeBotRange.Cells.Item(ChangeBotRange.Cells.count).Address
         With Sheets("CAISO Update").Range(ChangeDescCol & ":" & ChangeDescCol).Columns
             .AutoFit
             .WrapText = True
         End With
-        
+
     'check for duplicates
         arr = ChangeTopRange
         For a = 1 To UBound(arr)
@@ -288,19 +300,6 @@ Dim CompDescColNum, rTopCompDesc
     End If
 End Sub
 
-Sub zz_test()
-Dim StationNameCol, x
-Dim FindCol As Range
-
-If MakeTopBottomArray("CAISO Update", "BY", 1) Then
-    Debug.Print TopRange.Columns(3).Address(0, 0)
-End If
-    
-    
-
-
-End Sub
-
 Sub AddZeroes()
 'reformats tower numbers, like "37/12" to the standard "037/012" format, and color those changes red
 'M. Norelli 2/8/2019
@@ -309,7 +308,7 @@ Sub AddZeroes()
     Dim c%, num$, letterPos%, letter$, msg(0 To 1) As String, w%, x%
     Dim wordCount%, content$, newWord$, newContent$, rewordCount%
     Dim startend(0 To 1) As Integer
-    
+
     If Selection.Find("/") Is Nothing Then
         MsgBox "No tower numbers found in the current selecton."
         Exit Sub
@@ -400,7 +399,7 @@ Dim FindCol
     Else
         MsgBox "Column " & header & " not found."
     End If
-    
+
 
 End Function
 
@@ -426,7 +425,7 @@ Sub MakeSourceDocsRefTable()
     On Error Resume Next
     Set wsTest = ActiveWorkbook.Worksheets("Source Doc Ref Tbl")
     On Error GoTo 0
-     
+
 '   Make sheet if it doesn't exist
     If wsTest Is Nothing Then
         Worksheets.Add.Name = "Source Doc Ref Tbl"
@@ -442,7 +441,7 @@ Sub MakeSourceDocsRefTable()
             .Rows(1).RowHeight = 25.5
         End With
     End If
-    
+
     Sheets("Source Doc Ref Tbl").UsedRange.ClearContents
 
 '   Unmerge any merged cells (like Required Updates row) in CAISO Update, to prevent errors
@@ -455,12 +454,12 @@ Sub MakeSourceDocsRefTable()
 '
     'Columns needed to pull from CAISO Update tab
     ColumnLtrs = Array("F", "G", "H", "BT", "C", "R", "A")
-    
+
     ReDim ColumnNums(UBound(ColumnLtrs)) As Long
     For col = 0 To UBound(ColumnLtrs)
         ColumnNums(col) = Range(ColumnLtrs(col) & 1).Column
     Next
-    
+
     arr = Sheets("CAISO Update").Range("A1").CurrentRegion
     With Worksheets("Source Doc Ref Tbl")
         Set Dest = .Range("A1")
@@ -473,9 +472,9 @@ Sub MakeSourceDocsRefTable()
             Application.Index(arr, Evaluate("=" & "Row(1:" & UBound(arr, 1) & ")"), ColumnNums)
         .Activate
     End With
-    
+
   UpdateTopSection
-  
+
   With Sheets("Source Doc Ref Tbl")
 '   Format all rows
     With .Range("A:D")
@@ -526,23 +525,23 @@ If MakeTopBottomArray("Source Doc Ref Tbl", "F", 2) Then
                 End If
             Next t
         End If
-        
+
     Next f
-    
+
     BotRange.EntireRow.Delete
-    
+
     '   Remove Retired rows
     '   https://www.rondebruin.nl/win/winfiles/MoreDeleteCode.txt
     '       Set the first and last row to loop through
     FirstRowTop = TopRange.Cells(1).row
     LastRowTop = TopRange.Rows(TopRange.Rows.count).row
-    
+
     ' find "Type of Change" column
     Set FindCol = Sheets("Source Doc Ref Tbl").UsedRange.Rows(1).Find("Type of Change", lookat:=xlPart)
     If Not FindCol Is Nothing Then
         TypeOfChangeCol = FindCol.Column
     End If
-    
+
     '       We loop from Lastrow to Firstrow (bottom to top)
     For lRow = LastRowTop To FirstRowTop Step -1
     '       We check the Change ID values in the E column
@@ -561,8 +560,8 @@ If MakeTopBottomArray("Source Doc Ref Tbl", "F", 2) Then
     Next lRow
     '       Delete all rows in one time
     If Not rng Is Nothing Then rng.EntireRow.Delete
-    
-        
+
+
     '   Remove "Required Updates" row
     Dim NewLastrow%
     NewLastrow = ActiveSheet.UsedRange.Rows(ActiveSheet.UsedRange.Rows.count).row
@@ -573,7 +572,7 @@ If MakeTopBottomArray("Source Doc Ref Tbl", "F", 2) Then
         If lcell.value Like "*equired*" Then foundReqUpd = 1
     Next
     If foundReqUpd = 1 Then SearchRange.EntireRow.Delete
-    
+
     ' clear Type of Change and OID columns
     Columns(TypeOfChangeCol).ClearContents
     Set FindCol = Sheets("Source Doc Ref Tbl").UsedRange.Rows(1).Find("OID", lookat:=xlPart)
@@ -589,14 +588,12 @@ If MakeTopBottomArray("Source Doc Ref Tbl", "F", 2) Then
         Dest.Resize(UBound(topArray, 2), 1) = " "
         .Activate
     End With
-    
 
 End If      ' MakeTopBottomArray
 
-
 End Sub
 
-Sub CompareAddIns()
+Sub UpdatePGETools()
 Dim LocalPGE186AddIns As New Collection
 Dim totalAddIns%, n%
 Dim addinName$, AddInStorageLocation$, pattern$
@@ -614,6 +611,7 @@ For n = 1 To totalAddIns
     If addinName Like pattern And AddIns(n).Installed Then LocalPGE186AddIns.Add addinName
 Next
 
+'Compare PGETools add-ins
 If LatestAddIn = "" Then
     MsgBox "No PGE186 tools available to install from " & AddInStorageLocation & "."
 Else
@@ -627,7 +625,7 @@ Else
     Else
         LastInstalledAddIn = LocalPGE186AddIns(LocalPGE186AddIns.count) '   assumes add-in list is sorted A-Z ascending
         currentVersion = Version(LastInstalledAddIn)
-    
+
         If availVersion > currentVersion Then
             MsgBox "Update needed." & vbCrLf & "Installing new version, " & availVersion & "."
             Call InstallAddIn
@@ -639,6 +637,7 @@ Else
 End If
 
 End Sub
+
 Sub InstallAddIn()
 ' https://andreilungu.com/how-to-automatically-install-and-activate-an-excel-addin-using-vba-code/
 ' Dependencies:
@@ -666,49 +665,48 @@ copied_file = folder_to_copy & filetoinstall
 'Check if add-in is in %APPDATA%\Microsoft\AddIns
 If Len(Dir(copied_file)) = 0 Then
 
-'if add-in does not exist then copy the file
-FileCopy file_to_copy, copied_file
-Set eai = Application.AddIns.Add(fileName:=copied_file)
-eai.Installed = True
-MsgBox "Add-in installed." & vbCrLf & "If you don't see version " & Split(addinName, "Excel - PGE186 Tools v")(1) & " tools, save, close, and re-open Excel."
-'remove old add-in
-pattern = LastInstalledAddIn
-For d = 1 To Application.AddIns.count
-    If AddIns(d).Name = pattern Then
-        Debug.Print "Removed " & AddIns(d).Name
-        AddIns(d).Installed = False
-        Kill Application.UserLibraryPath & AddIns(d).Name
-    End If
-Next
+    'if add-in does not exist then copy the file
+    FileCopy file_to_copy, copied_file
+    Set eai = Application.AddIns.Add(fileName:=copied_file)
+    eai.Installed = True
+    MsgBox "Add-in installed." & vbCrLf & "If you don't see version " & Split(addinName, "Excel - PGE186 Tools v")(1) & " tools, save, close, and re-open Excel."
+    'remove old add-in
+    pattern = LastInstalledAddIn
+    For d = 1 To Application.AddIns.count
+        If AddIns(d).Name = pattern Then
+            Debug.Print "Removed " & AddIns(d).Name
+            AddIns(d).Installed = False
+            Kill Application.UserLibraryPath & AddIns(d).Name
+        End If
+    Next
+    'delete old versions
+    DeleteAllButLast ("Excel - PGE186 Tools v*.xlam")
 
+Else  'if add-in already exists then the user will decide if will replace it or not
+    x = MsgBox("Add-in already exists! Replace?", vbYesNo)
 
-Else
+        If x = vbNo Then
+            Exit Sub
+        ElseIf x = vbYes Then
 
-'if add-in already exists then the user will decide if will replace it or not
-x = MsgBox("Add-in already exists! Replace?", vbYesNo)
+            'deactivate the add-in if it is activated
+            pattern = "Excel - PGE186 Tools v*.xlam"
+            For n = 1 To Application.AddIns.count
+                If AddIns(n).Name Like pattern And AddIns(n).Installed Then
+                    AddIns(n).Installed = False
+                End If
+            Next
 
-    If x = vbNo Then
-        Exit Sub
-    ElseIf x = vbYes Then
+            'delete the existing file
+            Kill copied_file
 
-        'deactivate the add-in if it is activated
-        pattern = "Excel - PGE186 Tools v*.xlam"
-        For n = 1 To Application.AddIns.count
-            If AddIns(n).Name Like pattern And AddIns(n).Installed Then
-                AddIns(n).Installed = False
-            End If
-        Next
+            'copy the new file
+            FileCopy file_to_copy, copied_file
+            Set eai = Application.AddIns.Add(fileName:=copied_file)
+            eai.Installed = True
+            MsgBox "New Add-in installed."
 
-        'delete the existing file
-        Kill copied_file
-
-        'copy the new file
-        FileCopy file_to_copy, copied_file
-        Set eai = Application.AddIns.Add(fileName:=copied_file)
-        eai.Installed = True
-        MsgBox "New Add-in installed."
-
-    End If
+        End If
 
 End If
 
@@ -730,6 +728,41 @@ Dim before$, after$
   after = ".xl"
   Version = Left(Mid(fileName, Len(before) + 1), InStr(Mid(fileName, Len(before) + 1), after) - 1)
 End Function
+Sub zztest()
+  Debug.Print DeleteAllButLast("Excel - PGE186 Tools v*.xlam")
+End Sub
+
+Function DeleteAllButLast(pattern As String) As Integer
+
+Dim fname$, aFiles() As Variant
+Dim fs, f, fc, s, PGEfile, count As Long
+
+Set fs = CreateObject("Scripting.FileSystemObject")
+Set f = fs.GetFolder(Application.UserLibraryPath)
+Set fc = f.Files
+
+'fill array with filenames
+count = 1
+For Each PGEfile In fc
+    If PGEfile.Name Like pattern Then
+        ReDim Preserve aFiles(count)
+        aFiles(count) = PGEfile.Name
+       count = count + 1
+    End If
+Next
+
+'drop last item
+ReDim Preserve aFiles(UBound(aFiles) - 1)
+
+'delete all remaining
+For s = 1 To UBound(aFiles)
+    On Error Resume Next
+    Kill (f & "\" & aFiles(s))
+    DeleteAllButLast = s
+    On Error GoTo 0
+Next
+
+End Function
 
 Private Sub whataddins()
 Dim i%, x$
@@ -741,6 +774,7 @@ For i = 1 To Application.AddIns.count
 Next
 End Sub
 Private Sub uninstallallPGE186()
+'for testing only, incorporated in InstallAddIn sub
 Dim pattern$, i%
 pattern = "Excel - PGE186 Tools v*.xlam"
 Debug.Print String(65535, vbCr)
@@ -753,6 +787,9 @@ For i = 1 To Application.AddIns.count
         End If
     End If
 Next
+On Error Resume Next
+Kill Application.UserLibraryPath & pattern
+On Error GoTo 0
 End Sub
 Sub MakeSourceDocsUsedTable()
 'Develops the data necessary for copying into the Source Documents Used table.
@@ -767,7 +804,7 @@ Sub MakeSourceDocsUsedTable()
     ParseCommentRows
     SplitCommentRows
     CleanCommentRows
-    
+
 End Sub
 
 Sub ClearCreateTable()
@@ -855,7 +892,7 @@ Set r = Range("B1:B" & LastRow)
             newContent = newContent & newWord
 
         Next
-        
+
         newContent = Trim(newContent)
         If Len(newContent) > 0 Then
             If InStr(Len(newContent), newContent, ";") = Len(newContent) Then newContent = Left(newContent, Len(newContent) - 1)
@@ -959,7 +996,7 @@ Set rng = .Range("B1:B" & LR)
 For Each r In rng
     r.value = Replace(r.value, ",", "")
 Next
-    
+
 'Change BOM to "Bill of Materials, Dwg"
 '       GAD to "General Arrangement Diagram, Dwg"
 '       SLD to "Single Line Diagram, Dwg"
@@ -1089,9 +1126,9 @@ Dim rng As Range, cell
     .Range("XX1").value = "Line Name"
     .Range("XX2:XX" & .Range("F1", .Cells(Rows.count, 1).End(xlUp)).Rows.count).value = Split(.Parent.Name, "Rev")(0)
     .Range("XY1").value = "Field Verification Completion"
-  
+
   Call MakeTable("Info Request", "Verification", "A", Array("BU", "BV", "XX", "F", "C", "G", "H", "O", "BT", "XY"))
-  
+
     .Columns("XX:XY").Delete
   End With
   With Worksheets("Info Request")
@@ -1114,7 +1151,7 @@ Dim rng As Range, cell
     Next cell
     rng.Select
     If Not rng Is Nothing Then rng.EntireRow.Delete
-    
+
         '   Format first row text
     With .Range("A1:P1")
         .Font.Bold = True
@@ -1124,7 +1161,7 @@ Dim rng As Range, cell
         .WrapText = True
     End With
 End With
-  
+
 End Sub
 Sub MakeInfoRequestCTTable()
 Dim Allrows%, col, cell, rng As Range
@@ -1134,15 +1171,15 @@ Dim Allrows%, col, cell, rng As Range
     .Range("XX2:XX" & Allrows).value = Split(.Parent.Name, "Rev")(0)
     .Range("XY1").value = "Date Resolved"
     .Range("XZ1").value = "PG&E Verified Information"
-  
+
   Call MakeTable("Info Request - CT", "Verification", "A", Array("BV", "XY", "C", "XX", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "XZ", "BU"))
   For Each col In Array("A", "C", "G", "H", "P")
     Worksheets("Info Request - CT").Range(col & ":" & col).HorizontalAlignment = xlCenter
   Next
-    
+
     .Columns("XX:XZ").Delete
   End With
-  
+
   With Worksheets("Info Request - CT")
     'Remove non-CT rows
     Set rng = Nothing
@@ -1210,10 +1247,10 @@ Sheets(NewSheet).Columns("A:BY").Delete
 Worksheets("CAISO Update").Activate
 
 If MakeTopBottomArray("CAISO Update", ChangeIDCol, StartRow) Then
-    
+
 
 '    NewSheetCol = 1
-    
+
     'Add headers
 '    For Each c In GetCAISOCols
 '        Worksheets(NewSheet).Cells(NewSheetRow, NewSheetCol).value = Worksheets("CAISO Update").Range(c & "1").value
@@ -1221,7 +1258,7 @@ If MakeTopBottomArray("CAISO Update", ChangeIDCol, StartRow) Then
 '    Next
 '    NewSheetRow = NewSheetRow + 1
 
-    
+
     ReDim ColumnNums(UBound(GetCAISOCols)) As Long
     For col = 0 To UBound(GetCAISOCols)
         ColumnNums(col) = Range(GetCAISOCols(col) & 1).Column
@@ -1239,7 +1276,7 @@ If MakeTopBottomArray("CAISO Update", ChangeIDCol, StartRow) Then
     End With
 
     NewSheetRow = 2
-    
+
     If LookingFor = "Verification" Then
         For f = 1 To UBound(topArray, 2)
             red = Range(LookInCAISOCol & StartRow + f - 1).Font.Color ' collect rows that have read text, even if not "Verification"
@@ -1396,7 +1433,7 @@ Function MakeTopBottomArray(wrksheet As String, LastCol As String, StartRow As I
 37     If shortRowList.count > 1 Then
 38         shortRowListText = ""
 39         s = shortRowList.count
-40         For Each k In shortRowList.Keys
+40         For Each k In shortRowList.keys
 41             connector = Switch(s >= 3, ", ", s = 2, " and ", s = 1, ".")
 42             shortRowListText = shortRowListText & k & connector
 43             s = s - 1
@@ -1410,7 +1447,7 @@ Function MakeTopBottomArray(wrksheet As String, LastCol As String, StartRow As I
 
      'Find top and bottom sections, when shortRowList.Count = 1
 51     splitrow = 0
-52     For Each k In shortRowList.Keys
+52     For Each k In shortRowList.keys
 53         splitrow = k
 54     Next
 55
@@ -1423,7 +1460,7 @@ Function MakeTopBottomArray(wrksheet As String, LastCol As String, StartRow As I
 61
 62    Debug.Print "Top: " & TopRange.Address
 63    Debug.Print "Bottom: " & BotRange.Address
-    
+
     'stop if top section is smaller than bottom section
 64     If UBound(topArray) < botCount Then
 65         current_region.Select

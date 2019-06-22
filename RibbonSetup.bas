@@ -5,7 +5,7 @@ Attribute VB_Name = "RibbonSetup"
 'https://www.thespreadsheetguru.com/blog/step-by-step-instructions-create-first-excel-ribbon-vba-addin
 'https://www.thespreadsheetguru.com/myfirstaddin-help/
 '**************************************************************
-Public Const Version = "2.2"
+Public Const Version = "2.3"
 
 Sub GetVisible(control As IRibbonControl, ByRef MakeVisible)
 'PURPOSE: Show/Hide buttons based on how many you need (False = Hide/True = Show)
@@ -362,7 +362,7 @@ Select Case control.ID
 '  Case "cButton09": Application.Run "DummyMacro"
 '  Case "cButton10": Application.Run "DummyMacro"
 '
-  Case "dButton01": Application.Run "CompareAddIns"
+  Case "dButton01": Application.Run "UpdatePGETools"
 '  Case "dButton02": Application.Run "DummyMacro"
 '  Case "dButton03": Application.Run "DummyMacro"
 '  Case "dButton04": Application.Run "DummyMacro"

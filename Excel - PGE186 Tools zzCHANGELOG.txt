@@ -1,3 +1,9 @@
+Version 2.3 - 6/21/2019
+
+Changes Change ID numbers to fill down only to last row of top section
+Adds process to remove old add-in files from user directory when updating
+In Change Descriptions, changes DISC to SW from transmission line switches
+
 Version  2.2 - 6/20/2019
 
 Corrects Change Descriptions to look for TLSs first before concatenating other fields
